@@ -8,17 +8,17 @@ const { Todo } = require('./../models/todo');
 const todos = [
   {
     _id: new ObjectID(),
-    text: ' First test todo'
+    text: 'First test todo'
   },
   {
     _id: new ObjectID(),
-    text: 'second test todo'
+    text: 'Second test todo'
   }
 ];
 
 // To clear the test database before each test
 beforeEach(done => {
-  Todo.remove({})
+  Todo.deleteMany({})
     .then(() => {
       return Todo.insertMany(todos);
     })
@@ -100,7 +100,6 @@ describe('GET /todos:id', () => {
 
   it('should return 404 if todo not found', done => {
     const notExistID = new ObjectID().toHexString();
-
     request(app)
       .get(`/todos/${notExistID}`)
       .expect(404)
@@ -112,6 +111,44 @@ describe('GET /todos:id', () => {
 
     request(app)
       .get(`/todos/${invalidID}`)
+      .expect(404)
+      .end(done);
+  });
+});
+
+describe('DELETE  /todos:id', () => {
+  const id = todos[0]._id;
+
+  it('should removetodo', done => {
+    request(app)
+      .delete(`/todos/${id}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.todo.text).toBe(todos[0].text);
+      })
+      .end((err, res) => {
+        if(err){
+          return done(err);
+        }
+
+        Todo.findById(id).then(todo => {
+          expect(todo).toNotExist();
+          done();
+        }).catch(e => done(e))
+      });
+  });
+
+  it('should return 404 if todo not found', done => {
+    const id = new ObjectID();
+    request(app)
+      .delete(`/todos/${id}`)
+      .expect(404)
+      .end(done);
+  });
+
+  it('should return 404 for invalid id', done => {
+    request(app)
+      .delete('/todos/123')
       .expect(404)
       .end(done);
   });

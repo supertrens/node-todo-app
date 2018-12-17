@@ -48,9 +48,9 @@ app.get('/todos/:id', (req, res) => {
 
   Todo.findById(id)
     .then(todo => {
-      todo ? res.send({ todo }) : res.status(404).send({});
+     return todo ? res.send({ todo }) : res.status(404).send({});
     })
-    .catch(e => res.status(400).send({}));
+    .catch(e => res.status(400).send());
 });
 
 app.delete('/todos/:id', (req, res) => {
@@ -60,14 +60,11 @@ app.delete('/todos/:id', (req, res) => {
     return res.status(404).send('not valid ID');
   }
 
-  Todo.findByIdAndRemove(id)
+  Todo.findOneAndDelete({_id: ObjectID(id)})
     .then(todo => {
-      if (!todo) {
-        res.status(404).send('Todo not found');
-      }
-      res.send({ todo, deleted: true });
+      todo ? res.send({ todo }) : res.status(404).send({});
     })
-    .catch(e => res.status(400).send(e));
+    .catch(e => res.status(400).send());
 });
 
 app.listen(PORT, () => {
