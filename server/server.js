@@ -1,3 +1,5 @@
+require('./../server/config/config');
+
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -6,7 +8,7 @@ const { ObjectID } = require('mongodb');
 const { mongoose } = require('./db/mongoose');
 const { Todo } = require('./models/todo');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 const app = express();
 
 // middleware
@@ -89,7 +91,7 @@ app.patch('/todos/:id', (req, res) => {
         return res.status(404).send();
       }
 
-      res.send({todo});
+      res.send({ todo });
     })
     .catch(e => res.status(400).send());
 });
