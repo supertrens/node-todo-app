@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const urlLocal = 'mongodb://localhost:27017/TodoApp';
 const urlMongoLab = process.env.MONGODB_URI;
 
-
 mongoose.Promise = global.Promise;
 mongoose.connect(urlMongoLab || urlLocal);
 

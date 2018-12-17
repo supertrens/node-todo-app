@@ -53,6 +53,23 @@ app.get('/todos/:id', (req, res) => {
     .catch(e => res.status(400).send({}));
 });
 
+app.delete('/todos/:id', (req, res) => {
+  const id = req.params.id;
+
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send('not valid ID');
+  }
+
+  Todo.findByIdAndRemove(id)
+    .then(todo => {
+      if (!todo) {
+        res.status(404).send('Todo not found');
+      }
+      res.send({ todo, deleted: true });
+    })
+    .catch(e => res.status(400).send(e));
+});
+
 app.listen(PORT, () => {
   console.log(`The server is listening at ${PORT}`);
 });
