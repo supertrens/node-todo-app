@@ -4,28 +4,11 @@ const { ObjectID } = require('mongodb');
 
 const { app } = require('./../server');
 const { Todo } = require('./../models/todo');
-
-const todos = [
-  {
-    _id: new ObjectID(),
-    text: 'First test todo'
-  },
-  {
-    _id: new ObjectID(),
-    text: 'Second test todo',
-    completed: true,
-    completedAt: 1234
-  }
-];
+const { todos, populateTodos , users , populateUsers} = require('./seeds/seed');
 
 // To clear the test database before each test
-beforeEach(done => {
-  Todo.deleteMany({})
-    .then(() => {
-      return Todo.insertMany(todos);
-    })
-    .then(() => done());
-});
+beforeEach(populateUsers);
+beforeEach(populateTodos);
 
 describe('POST /todos', () => {
   it('should create a new todo', done => {
@@ -190,8 +173,8 @@ describe('PATCH /todos/:id', () => {
         completed: false
       })
       .expect(200)
-      .expect( res => {
-        const {todo} = res.body;
+      .expect(res => {
+        const { todo } = res.body;
         expect(todo.text).toBe(text);
         expect(todo.completed).toBe(false);
         expect(todo.completedAt).toNotExist();
